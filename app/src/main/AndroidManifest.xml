@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Nenhuma permissão de internet na V1: os dados ficam somente no aparelho. -->
+    <!--
+      Permissões: só o que o app usa de verdade.
+      - POST_NOTIFICATIONS: lembretes de contas a vencer (Android 13+ pede ao usuário).
+      O WorkManager adiciona automaticamente RECEIVE_BOOT_COMPLETED e WAKE_LOCK,
+      para os lembretes continuarem agendados depois de reiniciar o celular.
+      Sem internet na V1: os dados ficam somente no aparelho.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".ZmApplication"

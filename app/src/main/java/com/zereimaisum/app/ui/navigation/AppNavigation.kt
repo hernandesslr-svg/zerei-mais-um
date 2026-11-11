@@ -1,5 +1,9 @@
 package com.zereimaisum.app.ui.navigation
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import com.zereimaisum.app.notifications.BillReminders
+import kotlinx.coroutines.flow.first
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -91,8 +98,24 @@ private fun LoggedIn(userId: Long) {
             } else if (user.onboardingStep < 5) {
                 OnboardingScreen(userId, user.onboardingStep, user.name.substringBefore(' '))
             } else {
+                AskNotificationPermission()
                 MainScaffold(userId)
             }
+        }
+    }
+}
+
+/** Android 13+: pede a permissão de notificações uma única vez, ao entrar no app. */
+@Composable
+private fun AskNotificationPermission() {
+    if (Build.VERSION.SDK_INT < 33) return
+    val c = appContainer()
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    LaunchedEffect(Unit) {
+        if (!BillReminders.hasPermission(context) && !c.session.notificationPermissionAsked.first()) {
+            c.session.markNotificationPermissionAsked()
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 }

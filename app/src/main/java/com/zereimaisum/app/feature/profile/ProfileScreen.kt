@@ -6,6 +6,11 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.Settings
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Switch
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.zereimaisum.app.notifications.BillReminders
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,6 +90,13 @@ fun ProfileScreen(userId: Long) {
     var message by remember { mutableStateOf<String?>(null) }
     var askDelete by remember { mutableStateOf(false) }
     var photo by remember { mutableStateOf<Bitmap?>(null) }
+    val reminders by c.session.remindersEnabled.collectAsState(initial = true)
+    var notifGranted by remember { mutableStateOf(BillReminders.hasPermission(context)) }
+    // Atualiza ao voltar das configurações do sistema.
+    LifecycleResumeEffect(Unit) {
+        notifGranted = BillReminders.hasPermission(context)
+        onPauseOrDispose { }
+    }
 
     LaunchedEffect(user?.id) { user?.let { name = it.name; phone = it.phone ?: "" } }
     LaunchedEffect(user?.photoUri) {
@@ -156,6 +168,25 @@ fun ProfileScreen(userId: Long) {
         SectionTitle("Aparência")
         ChipSelector(ThemeMode.entries, theme, { it.label }) { scope.launch { c.session.setTheme(it) } }
 
+        SectionTitle("Notificações")
+        ListItem(
+            headlineContent = { Text("Lembretes de contas a vencer") },
+            supportingContent = {
+                Text(
+                    if (notifGranted) "Aviso diário, por volta das 9h, de contas vencidas ou que vencem até amanhã"
+                    else "As notificações estão bloqueadas. Toque aqui para permitir nas configurações do Android."
+                )
+            },
+            leadingContent = { Icon(Icons.Filled.Notifications, null) },
+            trailingContent = {
+                Switch(checked = reminders && notifGranted, onCheckedChange = { on ->
+                    if (on && !notifGranted) openNotificationSettings(context)
+                    else scope.launch { c.session.setRemindersEnabled(on) }
+                })
+            },
+            modifier = Modifier.clickable { if (!notifGranted) openNotificationSettings(context) },
+        )
+
         SectionTitle("Organização")
         ListItem(
             headlineContent = { Text("Rever configuração inicial") },
@@ -225,6 +256,13 @@ private fun DeleteAccountDialog(onDismiss: () -> Unit, onConfirm: (String, (Stri
         confirmButton = { TextButton(onClick = { onConfirm(password) { error = it } }) { Text("Excluir", color = MaterialTheme.colorScheme.error) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
     )
+}
+
+private fun openNotificationSettings(context: android.content.Context) {
+    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { context.startActivity(intent) }
 }
 
 private fun loadBitmap(context: android.content.Context, uri: Uri): Bitmap? = runCatching {

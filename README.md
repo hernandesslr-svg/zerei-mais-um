@@ -31,7 +31,8 @@ Linha de comando:
 | Dívidas | Cadastro completo, saldo e evolução, juros, parcelas, vencimento, pagamentos (geram despesa vinculada sem duplicar), acordos, quitação com celebração, sugestão de prioridade |
 | Caixinhas | 5 iniciais + personalizadas (nome, ícone, cor, meta, data), adicionar, retirar, transferir entre caixinhas, histórico, retirada planejada (1, 3, 6, 7, 12 meses ou data personalizada) |
 | Metas | Criar, editar, registrar progresso, quanto guardar por mês até o prazo, celebração ao concluir |
-| Perfil | Dados pessoais, foto, nível atual, tema claro/escuro, exportar dados (JSON), excluir conta |
+| Perfil | Dados pessoais, foto, nível atual, tema claro/escuro, lembretes de contas a vencer, exportar dados (JSON), excluir conta |
+| Notificações | Aviso diário (~9h) de contas vencidas ou que vencem até amanhã; permissão pedida uma vez no Android 13+ |
 
 \* Patrimônio, alertas avançados, relatórios, cartões, moedas ZM, níveis 2–5, medalhas e loja estão nas Fases 2 e 3 do plano.
 
