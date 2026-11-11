@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 ou anterior: inclui banco e preferências no backup do Google do próprio usuário. -->
+<full-backup-content>
+    <include domain="database" path="zerei_mais_um.db" />
+    <include domain="sharedpref" path="." />
+</full-backup-content>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: backup em nuvem do próprio usuário (criptografado pelo sistema); sem transferência direta entre aparelhos. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="zerei_mais_um.db" />
+        <include domain="file" path="datastore/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="zerei_mais_um.db" />
+    </device-transfer>
+</data-extraction-rules>
